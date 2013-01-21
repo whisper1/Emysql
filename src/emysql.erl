@@ -248,7 +248,7 @@ add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding) ->
 %%      Password = string()
 %%      Host = string()
 %%      Port = integer()
-%%      Database = string()
+%%      Database = string() | undefined
 %%      Encoding = utf8 | latin1
 %%      StartCmds = list(binary())
 %%      Result = {reply, {error, pool_already_exists}, state()} | {reply, ok, state() }
