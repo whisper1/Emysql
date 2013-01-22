@@ -142,11 +142,10 @@ open_connections(Pool) ->
     end.
 
 open_connection(#pool{pool_id=PoolId, host=Host, port=Port, user=User,
-        password=Password, database=Database, encoding=Encoding,
-        start_cmds=StartCmds} = Pool) ->
-     %-% io:format("~p open connection for pool ~p host ~p port ~p user ~p base ~p~n", [self(), PoolId, Host, Port, User, Database]),
-     %-% io:format("~p open connection: ... connect ... ~n", [self()]),
-    case gen_tcp:connect(Host, Port, [binary, {packet, raw}, {active, false}]) of
+                      password=Password, database=Database, encoding=Encoding,
+                      connect_timeout = ConnectTimeout,
+                      start_cmds=StartCmds} = Pool) ->
+    case gen_tcp:connect(Host, Port, [binary, {packet, raw}, {active, false}], ConnectTimeout) of
         {ok, Sock} ->
             #greeting {
                server_version = Version,

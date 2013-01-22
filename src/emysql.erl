@@ -199,6 +199,7 @@ default_timeout() ->
 %%		         | {port, integer()}
 %%		         | {database, string() | undefined}
 %%		         | {encoding, atom()}
+%%		         | {connect_timeout, integer()}
 %%		Result = {reply, {error, pool_already_exists}, state()} | {reply, ok, state() }
 %%
 %% @doc Synchronous call to the connection manager to add a pool.
@@ -213,7 +214,8 @@ default_timeout() ->
 %% database - the database to connect to (defaults to undefined)
 %% encoding - the connection encoding (defaults to utf8)
 %% start_commands - the initial commands to send to the server
-%% 
+%% connect_timeout - millisecond timeout for connect (timeouts to infinity)
+%%
 %% === Implementation ===
 %%
 %% Refer to add_pool/8 for implementation details.
@@ -226,9 +228,9 @@ add_pool(PoolId, Options) ->
     Database = proplists:get_value(database, Options, undefined),
     Encoding = proplists:get_value(encoding, Options, utf8),
     StartCmds = proplists:get_value(start_commands, Options, []),
-    add_pool(PoolId, Size, User, Password, Host, Port, Database, Encoding, StartCmds).
+    ConnectTimeout = proplists:get_value(connect_timeout, Options, infinity),
+    add_pool(PoolId, Size, User, Password, Host, Port, Database, Encoding, ConnectTimeout, StartCmds).
 
-%%
 %% @doc Synchronous call to the connection manager to add a pool.
 %%
 %% === Implementation ===
@@ -239,7 +241,10 @@ add_pool(PoolId, Options) ->
 %% @end doc: hd feb 11
 
 add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding) ->
-    add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, []).
+    add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, [], infinity).
+
+add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds) ->
+    add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds, infinity).
 
 %% @spec add_pool(PoolId, Size, User, Password, Host, Port, Database, Encoding, StartCmds) -> Result
 %%      PoolId = atom()
@@ -252,7 +257,7 @@ add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding) ->
 %%      Encoding = utf8 | latin1
 %%      StartCmds = list(binary())
 %%      Result = {reply, {error, pool_already_exists}, state()} | {reply, ok, state() }
-add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds)
+add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds, ConnectTimeout)
   when is_atom(PoolId),
        is_integer(Size),
        is_list(User),
@@ -261,18 +266,20 @@ add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds)
        is_integer(Port),
        is_list(DB) orelse DB == undefined,
        is_atom(Encoding),
-       is_list(StartCmds) ->
+       is_list(StartCmds),
+       is_integer(ConnectTimeout) orelse ConnectTimeout == undefined ->
     Pool = #pool{
-        pool_id = PoolId,
-        size = Size,
-        user = User,
-        password = Passwd,
-        host = Host,
-        port = Port,
-        database = DB,
-        encoding = Encoding,
-        start_cmds = StartCmds
-    },
+              pool_id = PoolId,
+              size = Size,
+              user = User,
+              password = Passwd,
+              host = Host,
+              port = Port,
+              database = DB,
+              encoding = Encoding,
+              connect_timeout = Connect_timeout,
+              start_cmds = StartCmds
+             },
     Pool1 = emysql_conn:open_connections(Pool),
     emysql_conn_mgr:add_pool(Pool1).
 
