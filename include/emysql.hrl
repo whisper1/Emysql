@@ -39,6 +39,7 @@
           locked=gb_trees:empty(),
           waiting=queue:new(),
           start_cmds=[],
+          connect_timeout = infinity,
           conn_test_period=0
          }).
 -record(emysql_connection, {

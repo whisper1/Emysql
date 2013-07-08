@@ -267,7 +267,7 @@ add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds, Connec
        is_list(DB) orelse DB == undefined,
        is_atom(Encoding),
        is_list(StartCmds),
-       is_integer(ConnectTimeout) orelse ConnectTimeout == undefined ->
+       is_integer(ConnectTimeout) orelse ConnectTimeout == infinity ->
     Pool = #pool{
               pool_id = PoolId,
               size = Size,
@@ -277,7 +277,7 @@ add_pool(PoolId, Size, User, Passwd, Host, Port, DB, Encoding, StartCmds, Connec
               port = Port,
               database = DB,
               encoding = Encoding,
-              connect_timeout = Connect_timeout,
+              connect_timeout = ConnectTimeout,
               start_cmds = StartCmds
              },
     Pool1 = emysql_conn:open_connections(Pool),
