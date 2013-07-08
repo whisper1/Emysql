@@ -98,7 +98,7 @@
 -export([start/0, stop/0]).
 
 -export([
-         add_pool/2, add_pool/8, add_pool/9, remove_pool/1,
+         add_pool/2, add_pool/8, add_pool/9, add_pool/10, remove_pool/1,
          increment_pool_size/2, decrement_pool_size/2,
          prepare/2,
          execute/2, execute/3, execute/4, execute/5,
