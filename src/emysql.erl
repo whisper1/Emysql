@@ -535,7 +535,7 @@ execute(PoolId, Query, Args, Timeout) when (is_list(Query) orelse is_binary(Quer
 
 execute(PoolId, StmtName, Args, Timeout) when is_atom(StmtName), is_list(Args) andalso (is_integer(Timeout) orelse Timeout == infinity) ->
 	Connection = emysql_conn_mgr:wait_for_connection(PoolId),
-	monitor_work(Connection, Timeout, {emysql_conn, execute, [Connection, StmtName, Args]}).
+	monitor_work(Connection, Timeout, [Connection, StmtName, Args]).
 
 %% @spec execute(PoolId, Query|StmtName, Args, Timeout, nonblocking) -> Result | [Result]
 %%	PoolId = atom()
@@ -577,7 +577,7 @@ execute(PoolId, StmtName, Args, Timeout) when is_atom(StmtName), is_list(Args) a
 execute(PoolId, Query, Args, Timeout, nonblocking) when (is_list(Query) orelse is_binary(Query)) andalso is_list(Args) andalso (is_integer(Timeout) orelse Timeout == infinity) ->
 	case emysql_conn_mgr:lock_connection(PoolId) of
 		Connection when is_record(Connection, emysql_connection) ->
-			monitor_work(Connection, Timeout, {emysql_conn, execute, [Connection, Query, Args]});
+			monitor_work(Connection, Timeout, [Connection, Query, Args]);
             unavailable ->
                 unavailable
 	end;
