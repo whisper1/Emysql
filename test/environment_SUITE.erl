@@ -50,19 +50,19 @@
 %%--------------------------------------------------------------------
 all() -> 
     [
-        initializing_crypto_app,
-        initializing_emysql_app,
-        accessing_emysql_module,
-        connecting_to_db_and_creating_a_pool_transition,
-        insert_a_record,
-        select_a_record,
+     initializing_crypto_app,
+     initializing_emysql_app,
+     accessing_emysql_module,
+     connecting_to_db_and_creating_a_pool_transition,
+     insert_a_record,
+     select_a_record,
 
-        add_pool_utf8,
-        add_pool_latin1,
-        add_pool_latin1_compatible,
-        add_pool_time_zone,
-        add_pool_wrong_db,
-        add_pool_wrong_cmd
+     add_pool_utf8,
+     add_pool_latin1,
+     add_pool_latin1_compatible,
+     add_pool_time_zone
+     %%add_pool_wrong_db,
+     %%add_pool_wrong_cmd
     ].
 
 init_per_testcase(T, Config) when
